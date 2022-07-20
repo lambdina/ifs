@@ -98,16 +98,20 @@
                                           0         0         0 0
                                           (.-dx o)  (.-dy o)  0 1))))
                 middle-width (/ (.width size) 2)
-                p1 (m/Offset middle-width (- (.height size) 200))
-                p2 (m/Offset middle-width (- (.height size) 10))
+                sticks [(m/Offset middle-width (- (.height size) 200)) (m/Offset middle-width (- (.height size) 10))
+                        (m/Offset (- middle-width 50) (- (.height size) 150)) (m/Offset middle-width  (- (.height size) 190))
+                        (m/Offset (+ middle-width 50) (- (.height size) 250)) (m/Offset middle-width  (- (.height size) 190))]
                 pic0
                 (.endRecording
-                 (doto (ui/PictureRecorder)
-                   (-> m/Canvas
-                       (.drawLine p1 p2
-                                  (doto (m/Paint)
-                                    (-> .color (set! m.Colors/green))
-                                    (-> .strokeWidth (set! 8)))))))]
+                 (let [pr (ui/PictureRecorder)
+                       canvas (m/Canvas pr)]
+                   (doseq [[x y] (partition 2 sticks)]
+
+                     (.drawLine canvas x y
+                                (doto (m/Paint)
+                                  (-> .color (set! m.Colors/black))
+                                  (-> .strokeWidth (set! 5)))))
+                   pr))]
             (dart:core/print transforms)
             (.drawPicture canvas
                           ((apply comp (repeat 10 #(next-pic pic0 [transforms] %)))
